@@ -1,3 +1,4 @@
+import time
 import copy
 
 # Getting input from user
@@ -96,13 +97,14 @@ for i in range(3):
         element_val.append(int(input()))
     Input_node.append(element_val)
 
+start_time=time.time()
 Count = 1
 Goal_state= [[1,2,3],
               [4,5,6],
               [7,8,0]]
 
 Address=[]
-Address.append(-1)
+Address.append(0)
 Orig_P_node.append(Input_node)
 Orig_P_str=[]
 Orig_P_str.append(Arr_to_str(Input_node))
@@ -120,7 +122,7 @@ if (Solvable(Input_node)):
             Node_str=Arr_to_str(Node_state_i)
             Orig_P_str, Count, G_count, Did_append = check_and_append(Orig_P_str, Node_str, Count, Goal)
             if Did_append:
-                Address.append(Node_index_i)
+                Address.append(Node_index_i+1)
                 Orig_P_node.append(Node_state_i)
         else:
             print("Goal reached!")
@@ -131,7 +133,7 @@ if (Solvable(Input_node)):
             Node_str=Arr_to_str(Node_state_i)
             Orig_P_str, Count, G_count, Did_append = check_and_append(Orig_P_str, Node_str, Count, Goal)
             if Did_append:
-                Address.append(Node_index_i)
+                Address.append(Node_index_i+1)
                 Orig_P_node.append(Node_state_i)
         else:
            print("Goal reached!")
@@ -142,7 +144,7 @@ if (Solvable(Input_node)):
             Node_str=Arr_to_str(Node_state_i)
             Orig_P_str, Count, G_count, Did_append = check_and_append(Orig_P_str, Node_str, Count, Goal)
             if Did_append:
-                Address.append(Node_index_i)
+                Address.append(Node_index_i+1)
                 Orig_P_node.append(Node_state_i)
         else:
             print("Goal reached!")
@@ -153,7 +155,7 @@ if (Solvable(Input_node)):
             Node_str=Arr_to_str(Node_state_i)
             Orig_P_str, Count, G_count, Did_append = check_and_append(Orig_P_str, Node_str, Count, Goal)
             if Did_append:
-                Address.append(Node_index_i)
+                Address.append(Node_index_i+1)
                 Orig_P_node.append(Node_state_i)
         else:
             print("Goal reached!")
@@ -172,8 +174,8 @@ if (Solvable(Input_node)):
     inc= Count - 1
     while(inc>=0):
         Add.append(inc)
-        inc=Address[inc]
-        Add.reverse()
+        inc=Address[inc]-1
+    Add.reverse()
         
     for i in range(len(Add)):
         print(str(Add[i]))    
@@ -186,4 +188,35 @@ if (Solvable(Input_node)):
                 print(Orig_P_node[l][j][k], end=' ')
             print('')
         print('')
-   
+    
+    File_1=open("nodePath.txt", "w+")
+    for i in range(len(Add)):
+        l=Add[i]
+        for j in range(3):
+            for k in range(3):
+                File_1.write(str(Orig_P_node[l][k][j]))
+                File_1.write(str(" "))
+        File_1.write(str("\n"))
+    File_1.close()
+    
+    File_2=open("NodesInfo.txt", "w+")
+    for i in range(len(Address)):
+        File_2.write(str(i+1))
+        File_2.write(" ")
+        File_2.write(str(Address[i]))
+        File_2.write(" ")
+        File_2.write("0")
+        File_2.write("\n")
+    File_2.close()
+    
+    File_3=open("Nodes.txt", "w+")
+    for i in range(Count):
+        for j in range(3):
+            for k in range(3):
+                File_3.write(str(Orig_P_node[i][k][j]))
+                File_3.write(str(" "))
+        File_3.write(str("\n"))
+    File_3.close()
+
+print("total time:")
+print(time.time()-start_time)        
