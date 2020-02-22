@@ -1,13 +1,23 @@
+'''
+ENPM 661 
+Planning for Autonomous Robots
+Project-1
+8 Puzzle problem solution using BFS algorithm
+Author: Srikumar Muralidharan
+UID: 116950572
+'''
+
 import time
 import copy
 
-# Getting input from user
+# Function to find location of zero at that node
 def zero_coord(node_i):
     for i in range(3):
         for j in range(3):
             if (node_i[i][j]==0):
                 return i,j
 
+# Function to convert a 2D array to string
 def Arr_to_str(a):
     b=""
     for i in range(3):
@@ -15,6 +25,7 @@ def Arr_to_str(a):
             b+=str(a[i][j])
     return b
 
+# Function to check if Input is solvable for given goal state
 def Solvable(Inp_node):
     b=[]
     inversion=0
@@ -36,7 +47,8 @@ def Solvable(Inp_node):
         return 1
     
     
-#checking if new node configuration already exists; if not appending the same onto the parent node:
+# Function to check if new node configuration already exists; 
+# If not, appending the same onto the parent node
 def check_and_append(Parent_node, new_string, count, Goal):
     temp_1=copy.deepcopy(Parent_node)
     c=copy.deepcopy(count)
@@ -53,16 +65,15 @@ def check_and_append(Parent_node, new_string, count, Goal):
         Goal_num=1
     return temp_1, c, Goal_num, breaker
 
-#defining function to swap the zero left
+# Function to slide the zero left
 def left_slide(node_i, Row, Col):
     temp = copy.deepcopy(node_i)
     if Col!=0:
-        swap = temp[Row][Col-1]
+        temp[Row][Col] = temp[Row][Col-1]
         temp[Row][Col-1]=0
-        temp[Row][Col]=swap
     return temp
 
-#defining function to swap the zero right
+# Function to slide the zero right
 def right_slide(node_i, Row, Col):
     temp = copy.deepcopy(node_i)
     if Col!=2:
@@ -70,7 +81,7 @@ def right_slide(node_i, Row, Col):
         temp[Row][Col+1]=0
     return temp
 
-#defining function to swap the zero up
+# Function to slide the zero up
 def up_slide(node_i, Row, Col):
     temp = copy.deepcopy(node_i)
     if Row!=0:
@@ -78,7 +89,7 @@ def up_slide(node_i, Row, Col):
         temp[Row-1][Col]=0
     return temp
 
-#defining function to swap the zero down
+# Function to slide the zero down
 def down_slide(node_i, Row, Col):
     temp = copy.deepcopy(node_i)
     if Row!=2:
@@ -86,9 +97,10 @@ def down_slide(node_i, Row, Col):
         temp[Row+1][Col]=0
     return temp
            
-# main code
+# Main code
     
-Orig_P_node=[]
+Orig_P_node=[]             #Parent Matrix to which unique configs get appended
+# Accepting input from user
 print("Enter entries row-wise")
 Input_node = []
 for i in range(3):    
@@ -97,40 +109,40 @@ for i in range(3):
         element_val.append(int(input()))
     Input_node.append(element_val)
 
-start_time=time.time()
-Count = 1
-Goal_state= [[1,2,3],
+start_time=time.time()      #Starting clock for computation
+Count = 1                   #Count to keep track of unique configurations
+Goal_state = [[1,2,3],      #If we change goal state, we have to change solvability criteria as well
               [4,5,6],
               [7,8,0]]
 
-Address=[]
-Address.append(0)
-Orig_P_node.append(Input_node)
-Orig_P_str=[]
-Orig_P_str.append(Arr_to_str(Input_node))
-G_count=0
-Node_index_i=0
-Goal=Arr_to_str(Goal_state)
+Address=[]                  #Keeps track of address of its parent element
+Address.append(0)           #For the first element
+Orig_P_node.append(Input_node)  #Appending input to parent node
+Orig_P_str=[]               #Parent Matrix used to store string equalent of unique configs
+Orig_P_str.append(Arr_to_str(Input_node))   #Appending input to parent node as a string
+G_count=0                   #Variable that is updated when goal is reached
+Node_index_i=0              #Iterand that keeps track of node that is being operated on
+Goal=Arr_to_str(Goal_state) #Goal matrix as a string
 
-if (Solvable(Input_node)):
-    while(Node_index_i<Count):
-        P_node= copy.deepcopy(Orig_P_node[Node_index_i])
-        Row, Col=zero_coord(P_node)
+if (Solvable(Input_node)):  #Checking if input is solvable
+    while(Node_index_i<Count):  #start of iterations
+        P_node= copy.deepcopy(Orig_P_node[Node_index_i]) #Taking node at iterand's address
+        Row, Col=zero_coord(P_node) #Obtaining zero at that position
     
-        if not(G_count):
-            Node_state_i = down_slide(P_node, Row, Col)
-            Node_str=Arr_to_str(Node_state_i)
+        if not(G_count):    #if we havent reached the goal
+            Node_state_i = down_slide(P_node, Row, Col) #tries to do slide down operation
+            Node_str=Arr_to_str(Node_state_i)   #converting new/original node to string to be used below
             Orig_P_str, Count, G_count, Did_append = check_and_append(Orig_P_str, Node_str, Count, Goal)
-            if Did_append:
-                Address.append(Node_index_i+1)
-                Orig_P_node.append(Node_state_i)
-        else:
+            if Did_append:  #If appended
+                Address.append(Node_index_i+1)  #Appending address
+                Orig_P_node.append(Node_state_i)    #Appending node to parent matrix
+        else:               #if we have reached the goal
             print("Goal reached!")
             break
     
         if not(G_count):
-            Node_state_i = up_slide(P_node, Row, Col)
-            Node_str=Arr_to_str(Node_state_i)
+            Node_state_i = up_slide(P_node, Row, Col)   #tries to do slide down operation
+            Node_str=Arr_to_str(Node_state_i)   
             Orig_P_str, Count, G_count, Did_append = check_and_append(Orig_P_str, Node_str, Count, Goal)
             if Did_append:
                 Address.append(Node_index_i+1)
@@ -140,8 +152,8 @@ if (Solvable(Input_node)):
            break
     
         if not(G_count):
-            Node_state_i = left_slide(P_node, Row, Col)
-            Node_str=Arr_to_str(Node_state_i)
+            Node_state_i = left_slide(P_node, Row, Col) #tries to do slide down operation
+            Node_str=Arr_to_str(Node_state_i)   
             Orig_P_str, Count, G_count, Did_append = check_and_append(Orig_P_str, Node_str, Count, Goal)
             if Did_append:
                 Address.append(Node_index_i+1)
@@ -151,8 +163,8 @@ if (Solvable(Input_node)):
             break
     
         if not(G_count):
-            Node_state_i = right_slide(P_node, Row, Col)
-            Node_str=Arr_to_str(Node_state_i)
+            Node_state_i = right_slide(P_node, Row, Col)    #tries to do slide down operation
+            Node_str=Arr_to_str(Node_state_i)  
             Orig_P_str, Count, G_count, Did_append = check_and_append(Orig_P_str, Node_str, Count, Goal)
             if Did_append:
                 Address.append(Node_index_i+1)
@@ -162,14 +174,14 @@ if (Solvable(Input_node)):
             break
     
     
-        print("count of unique configs:" + str(Count))
-        Node_index_i+=1
+        print("count of unique configs:" + str(Count))  #Prints number of unique configurations till then
+        Node_index_i+=1 #incrementing iterand
     #End of while loop
 
-    print("Total number of unique configurations")
-    print(Count)
+    print("\nTotal number of unique configurations")
+    print(Count)    #Total number of unique configurations
 
-    print("Address of the goal object")
+    print("Shortest path to reach goal operation is to follow these configurations:") 
     Add=[]
     inc= Count - 1
     while(inc>=0):
@@ -178,8 +190,9 @@ if (Solvable(Input_node)):
     Add.reverse()
         
     for i in range(len(Add)):
-        print(str(Add[i]))    
+        print(str(Add[i]))    #Prints Address of path to goal
 
+    #Printing matrices that form the sequence from input to goal
     print("shortest sequence from start to end")
     for i in range(len(Add)):
         l=Add[i]
@@ -189,6 +202,8 @@ if (Solvable(Input_node)):
             print('')
         print('')
     
+    #Creating File_1 nodePath.txt that stores configs in the shortest path
+    #Column wise
     File_1=open("nodePath.txt", "w+")
     for i in range(len(Add)):
         l=Add[i]
@@ -199,6 +214,8 @@ if (Solvable(Input_node)):
         File_1.write(str("\n"))
     File_1.close()
     
+    #Creating File_2 NodesInfo.txt that stores the values of all configurations and 
+    #their parents and the third column is the cost associated with it
     File_2=open("NodesInfo.txt", "w+")
     for i in range(len(Address)):
         File_2.write(str(i+1))
@@ -209,6 +226,8 @@ if (Solvable(Input_node)):
         File_2.write("\n")
     File_2.close()
     
+    #Creating File_3 Nodes.txt that store all unique configurations recorded 
+    #Column wise
     File_3=open("Nodes.txt", "w+")
     for i in range(Count):
         for j in range(3):
@@ -218,5 +237,6 @@ if (Solvable(Input_node)):
         File_3.write(str("\n"))
     File_3.close()
 
+# Function to record operation time
 print("total time:")
 print(time.time()-start_time)        
